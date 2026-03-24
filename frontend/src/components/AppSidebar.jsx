@@ -16,16 +16,9 @@ import {
   LogOut,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useRole } from "../contexts/RoleContext"; // ✅ correct import
 
-// ⚠️ Try to import RoleContext (optional)
-let useRoleSafe = null;
-try {
-  useRoleSafe = require("../contexts/RoleContext").useRole;
-} catch (e) {
-  useRoleSafe = null;
-}
-
-// Admin Menu
+// ✅ Admin Menu
 const adminMenu = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Students", url: "/students", icon: Users },
@@ -36,7 +29,7 @@ const adminMenu = [
   { title: "Admin Panel", url: "/admin", icon: Settings },
 ];
 
-// Student Menu
+// ✅ Student Menu
 const studentMenu = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "My Profile", url: "/students/me", icon: User },
@@ -48,24 +41,22 @@ const studentMenu = [
 export default function AppSidebar() {
   const location = useLocation();
 
-  // Safe role handling
-  const roleData = useRoleSafe ? useRoleSafe() : null;
-  const user = roleData?.user || null;
-  const isAdmin = roleData?.isAdmin ?? true; // default admin
-  const logout = roleData?.logout || (() => alert("Logout"));
+  // ✅ Proper role usage
+  const { user, isAdmin, logout } = useRole();
 
   const [collapsed, setCollapsed] = useState(false);
   const [dark, setDark] = useState(() => {
     if (typeof window !== "undefined") {
       return document.documentElement.classList.contains("dark");
     }
-    return true;
+    return false;
   });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
 
+  // ✅ Correct menu selection
   const menuItems = isAdmin ? adminMenu : studentMenu;
 
   return (
@@ -74,19 +65,19 @@ export default function AppSidebar() {
         collapsed ? "w-[70px]" : "w-[260px]"
       } h-screen sticky top-0 flex flex-col border-r bg-card/50 backdrop-blur-xl transition-all duration-300 z-50`}
     >
-      {/* Logo */}
+      {/* 🔥 Logo */}
       <div className="flex items-center gap-3 px-5 h-16 border-b">
-        <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0">
+        <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
           <Rocket className="w-4 h-4 text-white" />
         </div>
         {!collapsed && (
-          <span className="text-lg font-bold text-gradient tracking-tight">
+          <span className="text-lg font-bold text-gradient">
             PlacementAI
           </span>
         )}
       </div>
 
-      {/* User Info */}
+      {/* 👤 User Info */}
       {!collapsed && user && (
         <div className="px-4 py-3 border-b">
           <p className="text-sm font-medium truncate">{user.name}</p>
@@ -96,7 +87,7 @@ export default function AppSidebar() {
         </div>
       )}
 
-      {/* Menu */}
+      {/* 📌 Menu */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
           const active = location.pathname === item.url;
@@ -106,27 +97,25 @@ export default function AppSidebar() {
               to={item.url}
               className={`sidebar-item ${active ? "active" : ""}`}
             >
-              <item.icon className="w-5 h-5 flex-shrink-0" />
+              <item.icon className="w-5 h-5" />
               {!collapsed && <span>{item.title}</span>}
             </Link>
           );
         })}
       </nav>
 
-      {/* Bottom */}
+      {/* ⚙️ Bottom Controls */}
       <div className="px-3 py-4 border-t space-y-2">
+        {/* 🌙 Dark Mode */}
         <button
           onClick={() => setDark(!dark)}
           className="sidebar-item w-full"
         >
-          {dark ? (
-            <Sun className="w-5 h-5" />
-          ) : (
-            <Moon className="w-5 h-5" />
-          )}
+          {dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           {!collapsed && <span>{dark ? "Light Mode" : "Dark Mode"}</span>}
         </button>
 
+        {/* 📏 Collapse */}
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="sidebar-item w-full"
@@ -139,7 +128,7 @@ export default function AppSidebar() {
           {!collapsed && <span>Collapse</span>}
         </button>
 
-        {/* Logout */}
+        {/* 🚪 Logout */}
         {user && (
           <button
             onClick={logout}
