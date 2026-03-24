@@ -1,0 +1,25 @@
+server/
+├── config/
+│   └── db.js                # MongoDB connection setup
+├── controllers/             # Yahan saara logic aayega (Role-wise files)
+│   ├── authController.js    # Login, Register, Password hashing
+│   ├── studentController.js # Profile, Resume upload, App tracking
+│   ├── adminController.js   # Analytics, Reports, User management
+│   └── companyController.js # Job postings, Shortlisting logic
+├── models/                  # Database Blueprints
+│   ├── User.js              # Auth + Basic info (Common for all)
+│   ├── Job.js               # Job/Internship postings details
+│   └── Application.js       # Tracking (Who applied where and status)
+├── routes/                  # API Endpoints
+│   ├── authRoutes.js        # /api/auth/...
+│   ├── studentRoutes.js     # /api/student/...
+│   ├── adminRoutes.js       # /api/admin/...
+│   └── companyRoutes.js     # /api/company/...
+├── middleware/              # Security and Gatekeepers
+│   ├── authMiddleware.js    # JWT token check
+│   └── roleMiddleware.js    # Role check (e.g., Only Admin can access this)
+├── utils/                   # Helper functions
+│   └── pdfParser.js         # Resume parsing logic (Later use)
+├── .env                     # Secrets (DB URI, JWT Secret)
+├── index.js                 # Server starting point
+└── package.json
